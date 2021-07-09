@@ -1,0 +1,42 @@
+version: '3'
+services:
+  db_mysql:
+    image: "mysql:8.0"
+    container_name: bankofstates_mysql
+    volumes:
+      - bankofstates-data:/var/lib/mysql/data
+    environment:
+       MYSQL_ROOT_PASSWORD: root
+       MYSQL_DATABASE: bankofstates
+       MYSQL_USER: admin
+       MYSQL_PASSWORD: admin
+       MYSQL_RANDOM_ROOT_PASSWORD: admin
+         
+    networks:
+      - mynetwork
+  app-backend:
+    depends_on: 
+      - db_mysql
+    build: ./bankofstatesbackend
+    container_name: bankofstates-backend
+    environment:
+      DB_SERVER: bankofstates_mysql
+    networks:
+      - mynetwork
+
+     
+  bankofstates-frontend:
+    build: ./bankofstatesfrontend/bankofstates
+    container_name: bankofstates-frontend
+    depends_on: 
+      - app-backend
+    networks:
+      - mynetwork
+    ports: 
+      - 8080:8080
+networks:
+  mynetwork:
+    
+volumes:
+  bankofstates-data:
+
